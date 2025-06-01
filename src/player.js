@@ -1,8 +1,4 @@
-import { HighlightLayer, Color3 } from "@babylonjs/core";
-import { Chess } from "chess.js";
-import { highlightPiece, highlightSquares } from "./highlight.js";
-
-export default class Player {
+class Player {
   constructor(scene, caseMeshes, casePositions, playerColor) {
     this.scene = scene;
     this.caseMeshes = caseMeshes;
@@ -17,8 +13,8 @@ export default class Player {
     console.log("État initial du plateau :", this.chess.ascii());
 
     // HighlightLayers
-    this.hlPiece = new HighlightLayer("hlPiece", scene);
-    this.hlSquare = new HighlightLayer("hlSquare", scene);
+    this.hlPiece = new BABYLON.HighlightLayer("hlPiece", scene);
+    this.hlSquare = new BABYLON.HighlightLayer("hlSquare", scene);
   }
 
   selectPiece(mesh) {

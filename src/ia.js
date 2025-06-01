@@ -1,6 +1,6 @@
 import { getBestMove } from "./iaEngine.js"; 
 
-export function playAI(scene, casePositions) {
+function playAI(scene, casePositions) {
   const mv = getBestMove();
   if (!mv) return;
   const { pieceName, to } = mv;
