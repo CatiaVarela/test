@@ -13,17 +13,28 @@ class Game {
 
     // Caméra
     const target = BABYLON.Vector3.Zero();
+    const alpha = this.playerColor === "black" ? -Math.PI / 2 : Math.PI / 2;
+    const beta = Math.PI / 3.3;
+    const radius = 15;
+
     this.camera = new BABYLON.ArcRotateCamera(
-        "cam", Math.PI / 2, Math.PI / 3.3, 15, target, this.scene
+        "cam", alpha, beta, radius, target, this.scene
     );
+
     this.camera.attachControl(canvas, true);
     this.camera.lowerRadiusLimit = 10;
     this.camera.upperRadiusLimit = 55;
     this.camera.lowerBetaLimit = 0.5;
     this.camera.upperBetaLimit = Math.PI / 2;
     const half = Math.PI / 2;
-    this.camera.lowerAlphaLimit = Math.PI / 2 - half / 2;
-    this.camera.upperAlphaLimit = Math.PI / 2 + half / 2;
+    if (this.playerColor === "black") {
+      this.camera.lowerAlphaLimit = -Math.PI / 2 - half / 2;
+      this.camera.upperAlphaLimit = -Math.PI / 2 + half / 2;
+    } else {
+      this.camera.lowerAlphaLimit = Math.PI / 2 - half / 2;
+      this.camera.upperAlphaLimit = Math.PI / 2 + half / 2;
+    }
+
     this.camera.panningSensibility = 0;
 
     // Lumières & ombres
@@ -70,6 +81,9 @@ class Game {
           this.playerColor
       );
 
+      if (this.playerColor === "black") {
+        this.player.playAI(); // IA joue les pions blancs
+      }
       // Gestion de clic
       this.scene.onPointerObservable.add(evt => {
         if (evt.type !== BABYLON.PointerEventTypes.POINTERPICK || !evt.pickInfo.hit) return;
@@ -83,10 +97,10 @@ class Game {
         }
         console.log("Clic sur :", mesh.name);
         const moved = this.player.handlePick(mesh);
-        if (moved && this.player.turnHasChanged) {
-          this.player.turnHasChanged = false;
+        if (moved) {
           this.player.playAI();
         }
+        
         this.isProcessingClick = false;
       });
     });
@@ -103,13 +117,20 @@ class Game {
     if (this._topDown) {
       const topRadius = 80;
       const topBeta = 0.05;
-      this.camera.lowerBetaLimit = this.camera.upperBetaLimit = topBeta;
-      this.camera.lowerRadiusLimit = this.camera.upperRadiusLimit = topRadius;
+
+      // Angle selon la couleur du joueur
+      const topAlpha = this.playerColor === "black" ? -Math.PI / 2 : Math.PI / 2;
+
+      this.camera.alpha = topAlpha;
       this.camera.beta = topBeta;
       this.camera.radius = topRadius;
-      this.camera.lowerAlphaLimit = this.camera.upperAlphaLimit = this.camera.alpha;
+
+      this.camera.lowerBetaLimit = this.camera.upperBetaLimit = topBeta;
+      this.camera.lowerRadiusLimit = this.camera.upperRadiusLimit = topRadius;
+      this.camera.lowerAlphaLimit = this.camera.upperAlphaLimit = topAlpha;
       this.camera.panningSensibility = 0;
-    } else {
+    
+  } else {
       const s = this._camState || {};
       this.camera.alpha = s.alpha || Math.PI / 2;
       this.camera.beta = s.beta || Math.PI / 3.3;

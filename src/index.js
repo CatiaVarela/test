@@ -19,6 +19,7 @@ async function startChess(playerColor) {
   gameInstance = new Game("renderCanvas", playerColor);
 
   await soundManager.init(gameInstance.scene);
+    soundManager.playMusic(soundManager.Musics.GAME_MUSIC);
 }
 
 
